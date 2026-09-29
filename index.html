@@ -464,7 +464,7 @@ th{
             Estoque
         </button>
 
-        <button onclick="alert('Cadastro de clientes será desenvolvido na próxima etapa.')">
+        <button onclick="abrirTela('clientes'); listarClientes();">
             <span class="icone">👥</span>
             Clientes
         </button>
@@ -724,6 +724,105 @@ th{
 
 </div>
 
+<!-- CLIENTES -->
+<div id="clientes" class="tela container">
+
+    <div class="topo">
+        <h1>👥 Cadastro de Clientes</h1>
+
+        <button class="btn btn-voltar" onclick="voltarPainel()">
+            ← Voltar
+        </button>
+    </div>
+
+    <div class="formulario">
+
+        <h2>Novo Cliente</h2>
+
+        <input type="hidden" id="clienteId">
+
+        <div class="form-grid">
+
+            <div>
+                <label>Nome completo</label>
+                <input type="text" id="clienteNome" placeholder="Digite o nome">
+            </div>
+
+            <div>
+                <label>CPF</label>
+                <input type="text" id="clienteCpf" placeholder="Digite o CPF">
+            </div>
+
+            <div>
+                <label>Telefone</label>
+                <input type="text" id="clienteTelefone" placeholder="Digite o telefone">
+            </div>
+
+            <div>
+                <label>E-mail</label>
+                <input type="email" id="clienteEmail" placeholder="Digite o e-mail">
+            </div>
+
+            <div>
+                <label>Endereço</label>
+                <input type="text" id="clienteEndereco" placeholder="Digite o endereço">
+            </div>
+
+            <div>
+                <label>Cidade</label>
+                <input type="text" id="clienteCidade" placeholder="Digite a cidade">
+            </div>
+
+        </div>
+
+        <div style="margin-top:20px; display:flex; gap:10px;">
+
+            <button class="btn" onclick="salvarCliente()">
+                💾 Salvar Cliente
+            </button>
+
+            <button class="btn" onclick="limparFormularioCliente()">
+                🧹 Limpar
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="formulario">
+
+        <h2>Clientes cadastrados</h2>
+
+        <input
+            type="text"
+            id="buscarCliente"
+            placeholder="🔎 Buscar cliente..."
+            oninput="listarClientes()"
+        >
+
+        <div style="overflow-x:auto; margin-top:15px;">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Telefone</th>
+                        <th>Cidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tabelaClientes">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 <!-- PDV -->
 
 <div id="pdv" class="tela container">
@@ -1709,7 +1808,139 @@ function finalizarVenda(){
 salvarDados();
 
 atualizarPainel();
+// ==================== CLIENTES ====================
 
+let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+
+function salvarCliente() {
+    const nome = document.getElementById("clienteNome").value.trim();
+    const cpf = document.getElementById("clienteCpf").value.trim();
+    const telefone = document.getElementById("clienteTelefone").value.trim();
+    const email = document.getElementById("clienteEmail").value.trim();
+    const endereco = document.getElementById("clienteEndereco").value.trim();
+    const cidade = document.getElementById("clienteCidade").value.trim();
+
+    if (!nome) {
+        alert("Digite o nome do cliente.");
+        return;
+    }
+
+    const id = document.getElementById("clienteId").value;
+
+    if (id) {
+        const cliente = clientes.find(c => c.id == id);
+
+        if (cliente) {
+            cliente.nome = nome;
+            cliente.cpf = cpf;
+            cliente.telefone = telefone;
+            cliente.email = email;
+            cliente.endereco = endereco;
+            cliente.cidade = cidade;
+        }
+    } else {
+        clientes.push({
+            id: Date.now(),
+            nome,
+            cpf,
+            telefone,
+            email,
+            endereco,
+            cidade
+        });
+    }
+
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+
+    limparFormularioCliente();
+    listarClientes();
+
+    alert("Cliente salvo com sucesso!");
+}
+
+function listarClientes() {
+    const tabela = document.getElementById("tabelaClientes");
+
+    if (!tabela) return;
+
+    const busca = (document.getElementById("buscarCliente")?.value || "")
+        .toLowerCase();
+
+    tabela.innerHTML = "";
+
+    const filtrados = clientes.filter(cliente =>
+        cliente.nome.toLowerCase().includes(busca) ||
+        (cliente.cpf || "").toLowerCase().includes(busca) ||
+        (cliente.telefone || "").toLowerCase().includes(busca)
+    );
+
+    filtrados.forEach(cliente => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${cliente.nome}</td>
+            <td>${cliente.cpf || ""}</td>
+            <td>${cliente.telefone || ""}</td>
+            <td>${cliente.cidade || ""}</td>
+            <td>
+                <button class="btn" onclick="editarCliente(${cliente.id})">
+                    ✏️ Editar
+                </button>
+
+                <button class="btn" onclick="excluirCliente(${cliente.id})">
+                    🗑️ Excluir
+                </button>
+            </td>
+        `;
+
+        tabela.appendChild(tr);
+    });
+}
+
+function editarCliente(id) {
+    const cliente = clientes.find(c => c.id == id);
+
+    if (!cliente) return;
+
+    document.getElementById("clienteId").value = cliente.id;
+    document.getElementById("clienteNome").value = cliente.nome;
+    document.getElementById("clienteCpf").value = cliente.cpf || "";
+    document.getElementById("clienteTelefone").value = cliente.telefone || "";
+    document.getElementById("clienteEmail").value = cliente.email || "";
+    document.getElementById("clienteEndereco").value = cliente.endereco || "";
+    document.getElementById("clienteCidade").value = cliente.cidade || "";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function excluirCliente(id) {
+    const cliente = clientes.find(c => c.id == id);
+
+    if (!cliente) return;
+
+    if (!confirm(`Deseja excluir o cliente "${cliente.nome}"?`)) {
+        return;
+    }
+
+    clientes = clientes.filter(c => c.id != id);
+
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+
+    listarClientes();
+}
+
+function limparFormularioCliente() {
+    document.getElementById("clienteId").value = "";
+    document.getElementById("clienteNome").value = "";
+    document.getElementById("clienteCpf").value = "";
+    document.getElementById("clienteTelefone").value = "";
+    document.getElementById("clienteEmail").value = "";
+    document.getElementById("clienteEndereco").value = "";
+    document.getElementById("clienteCidade").value = "";
+}
 </script>
 
 </body>
