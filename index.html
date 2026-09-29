@@ -968,6 +968,114 @@ function atualizarPainel(){
 }
 
 
+function atualizarRelatorios(){
+
+    const hoje = new Date().toLocaleDateString("pt-BR");
+
+    const vendasHoje = vendas.filter(
+        v => v.data === hoje
+    );
+
+    let faturamento = 0;
+    let custoTotal = 0;
+
+    vendasHoje.forEach(venda => {
+
+        faturamento += Number(venda.total);
+
+        venda.itens.forEach(item => {
+
+            const produto = produtos.find(
+                p => p.id === item.id
+            );
+
+            if(produto){
+                custoTotal +=
+                    Number(produto.custo) *
+                    Number(item.quantidade);
+            }
+
+        });
+
+    });
+
+    const lucro = faturamento - custoTotal;
+
+    document.getElementById("relatorioFaturamento").textContent =
+        dinheiro(faturamento);
+
+    document.getElementById("relatorioVendas").textContent =
+        vendasHoje.length;
+
+    document.getElementById("relatorioCusto").textContent =
+        dinheiro(custoTotal);
+
+    document.getElementById("relatorioLucro").textContent =
+        dinheiro(lucro);
+
+    const pagamentos = {};
+
+    vendasHoje.forEach(venda => {
+
+        if(!pagamentos[venda.pagamento]){
+            pagamentos[venda.pagamento] = {
+                quantidade:0,
+                total:0
+            };
+        }
+
+        pagamentos[venda.pagamento].quantidade++;
+        pagamentos[venda.pagamento].total +=
+            Number(venda.total);
+
+    });
+
+    const tabelaPagamentos =
+        document.getElementById("tabelaPagamentos");
+
+    tabelaPagamentos.innerHTML = "";
+
+    Object.keys(pagamentos).forEach(pagamento => {
+
+        const dados = pagamentos[pagamento];
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${pagamento}</td>
+            <td>${dados.quantidade}</td>
+            <td>${dinheiro(dados.total)}</td>
+        `;
+
+        tabelaPagamentos.appendChild(tr);
+
+    });
+
+    const tabelaVendas =
+        document.getElementById("tabelaVendas");
+
+    tabelaVendas.innerHTML = "";
+
+    vendas
+    .slice()
+    .reverse()
+    .forEach(venda => {
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${venda.data}</td>
+            <td>${venda.hora}</td>
+            <td>${venda.pagamento}</td>
+            <td>${dinheiro(venda.total)}</td>
+        `;
+
+        tabelaVendas.appendChild(tr);
+
+    });
+
+}
+
 function limparFormulario(){
 
     document.getElementById("produtoId").value="";
