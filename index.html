@@ -969,7 +969,8 @@ function atualizarPainel(){
 
 
 function atualizarRelatorios(){
-
+    vendas = JSON.parse(localStorage.getItem("conectPDV_vendas")) || [];
+    produtos = JSON.parse(localStorage.getItem("conectPDV_produtos")) || [];
     const hoje = new Date().toLocaleDateString("pt-BR");
 
     const vendasHoje = vendas.filter(
