@@ -643,7 +643,86 @@ th{
     </div>
 
 </div>
+<!-- RELATÓRIOS -->
 
+<div id="relatorios" class="tela container">
+
+    <div class="topo">
+        <h1>📊 Relatórios</h1>
+
+        <button class="btn btn-voltar" onclick="voltarPainel()">
+            ← Voltar
+        </button>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Faturamento hoje</h3>
+            <strong id="relatorioFaturamento">R$ 0,00</strong>
+        </div>
+
+        <div class="card">
+            <h3>Vendas hoje</h3>
+            <strong id="relatorioVendas">0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Custo dos produtos</h3>
+            <strong id="relatorioCusto">R$ 0,00</strong>
+        </div>
+
+        <div class="card">
+            <h3>Lucro estimado</h3>
+            <strong id="relatorioLucro">R$ 0,00</strong>
+        </div>
+
+    </div>
+
+    <div class="tabela-area">
+
+        <h2>💳 Vendas por forma de pagamento</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Forma de pagamento</th>
+                    <th>Quantidade</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody id="tabelaPagamentos"></tbody>
+
+        </table>
+
+    </div>
+
+    <br>
+
+    <div class="tabela-area">
+
+        <h2>🧾 Histórico de vendas</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Pagamento</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody id="tabelaVendas"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
 
 <!-- PDV -->
 
