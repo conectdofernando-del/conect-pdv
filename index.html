@@ -102,32 +102,142 @@ footer{
     color:#6b7280;
 }
 
-/* PDV */
-
-#pdv{
+.tela{
     display:none;
 }
 
-.pdv-topo{
+.tela.ativa{
+    display:block;
+}
+
+.topo{
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:20px;
 }
 
-.pdv-topo h1{
+.topo h1{
     font-size:28px;
 }
 
-.btn-voltar{
+.btn{
     border:0;
-    background:#374151;
-    color:white;
-    padding:12px 20px;
     border-radius:8px;
+    padding:11px 18px;
     cursor:pointer;
     font-weight:bold;
 }
+
+.btn-voltar{
+    background:#374151;
+    color:white;
+}
+
+.btn-verde{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-azul{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-vermelho{
+    background:#dc2626;
+    color:white;
+}
+
+.formulario{
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    margin-bottom:25px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.campo{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.campo label{
+    font-weight:bold;
+}
+
+.campo input,
+.campo select,
+.busca{
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:15px;
+}
+
+.form-acoes{
+    margin-top:20px;
+    display:flex;
+    gap:10px;
+}
+
+.tabela-area{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    overflow-x:auto;
+}
+
+.tabela-area h2{
+    margin-bottom:15px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:13px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+}
+
+th{
+    background:#f9fafb;
+}
+
+.acoes{
+    display:flex;
+    gap:6px;
+}
+
+.badge{
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.badge-ok{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.badge-baixo{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* PDV */
 
 .pdv-grid{
     display:grid;
@@ -148,15 +258,6 @@ footer{
     margin-bottom:18px;
 }
 
-.busca{
-    width:100%;
-    padding:14px;
-    border:1px solid #d1d5db;
-    border-radius:8px;
-    font-size:16px;
-    margin-bottom:20px;
-}
-
 .produtos{
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -168,7 +269,6 @@ footer{
     border-radius:10px;
     padding:15px;
     cursor:pointer;
-    transition:.2s;
 }
 
 .produto:hover{
@@ -186,8 +286,10 @@ footer{
     font-size:18px;
 }
 
-.carrinho{
-    min-height:250px;
+.estoque-produto{
+    margin-top:7px;
+    color:#6b7280;
+    font-size:13px;
 }
 
 .item{
@@ -221,6 +323,12 @@ footer{
 .remover{
     background:#fee2e2!important;
     color:#dc2626;
+}
+
+.vazio{
+    text-align:center;
+    color:#6b7280;
+    padding:40px 10px;
 }
 
 .total{
@@ -264,17 +372,15 @@ footer{
     cursor:pointer;
 }
 
-.finalizar:hover{
-    background:#15803d;
-}
+/* ESTOQUE */
 
-.vazio{
-    text-align:center;
-    color:#6b7280;
-    padding:50px 10px;
+.estoque-baixo{
+    color:#dc2626;
+    font-weight:bold;
 }
 
 @media(max-width:900px){
+
     .cards,
     .menu{
         grid-template-columns:repeat(2,1fr);
@@ -283,12 +389,18 @@ footer{
     .pdv-grid{
         grid-template-columns:1fr;
     }
+
+    .form-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 
 @media(max-width:600px){
+
     .cards,
     .menu,
-    .produtos{
+    .produtos,
+    .form-grid{
         grid-template-columns:1fr;
     }
 
@@ -306,9 +418,10 @@ footer{
     <div>Conect Cell</div>
 </header>
 
-<!-- PAINEL PRINCIPAL -->
 
-<div id="painel" class="container">
+<!-- PAINEL -->
+
+<div id="painel" class="tela ativa container">
 
     <div class="cards">
 
@@ -324,29 +437,29 @@ footer{
 
         <div class="card">
             <h3>Produtos</h3>
-            <strong>0</strong>
+            <strong id="totalProdutos">0</strong>
         </div>
 
         <div class="card">
             <h3>Estoque baixo</h3>
-            <strong>0</strong>
+            <strong id="totalEstoqueBaixo">0</strong>
         </div>
 
     </div>
 
     <div class="menu">
 
-        <button onclick="abrirPDV()">
+        <button onclick="abrirTela('pdv'); carregarProdutosPDV();">
             <span class="icone">🛒</span>
             Frente de Caixa
         </button>
 
-        <button onclick="alert('Cadastro de produtos será desenvolvido na próxima etapa.')">
+        <button onclick="abrirTela('produtos')">
             <span class="icone">📦</span>
             Produtos
         </button>
 
-        <button onclick="alert('Controle de estoque será desenvolvido na próxima etapa.')">
+        <button onclick="abrirTela('estoque'); atualizarEstoque();">
             <span class="icone">🏪</span>
             Estoque
         </button>
@@ -366,7 +479,7 @@ footer{
             Configurações
         </button>
 
-        <button onclick="alert('Controle de usuários será desenvolvido na próxima etapa.')">
+        <button onclick="alert('Usuários serão desenvolvidos na próxima etapa.')">
             <span class="icone">🔐</span>
             Usuários
         </button>
@@ -380,16 +493,170 @@ footer{
 
 </div>
 
-<!-- FRENTE DE CAIXA -->
 
-<div id="pdv" class="container">
+<!-- PRODUTOS -->
 
-    <div class="pdv-topo">
-        <h1>🛒 Frente de Caixa</h1>
+<div id="produtos" class="tela container">
 
-        <button class="btn-voltar" onclick="voltarPainel()">
+    <div class="topo">
+
+        <h1>📦 Cadastro de Produtos</h1>
+
+        <button class="btn btn-voltar" onclick="voltarPainel()">
             ← Voltar
         </button>
+
+    </div>
+
+    <div class="formulario">
+
+        <h2 id="tituloFormulario">Novo produto</h2>
+
+        <input type="hidden" id="produtoId">
+
+        <div class="form-grid">
+
+            <div class="campo">
+                <label>Código</label>
+                <input id="codigo" placeholder="Ex: 001">
+            </div>
+
+            <div class="campo">
+                <label>Nome do produto</label>
+                <input id="nome" placeholder="Nome do produto">
+            </div>
+
+            <div class="campo">
+                <label>Categoria</label>
+                <input id="categoria" placeholder="Ex: Acessórios">
+            </div>
+
+            <div class="campo">
+                <label>Preço de custo</label>
+                <input id="custo" type="number" step="0.01" placeholder="0,00">
+            </div>
+
+            <div class="campo">
+                <label>Preço de venda</label>
+                <input id="preco" type="number" step="0.01" placeholder="0,00">
+            </div>
+
+            <div class="campo">
+                <label>Quantidade em estoque</label>
+                <input id="estoque" type="number" min="0" placeholder="0">
+            </div>
+
+            <div class="campo">
+                <label>Estoque mínimo</label>
+                <input id="estoqueMinimo" type="number" min="0" placeholder="0">
+            </div>
+
+        </div>
+
+        <div class="form-acoes">
+
+            <button class="btn btn-verde" onclick="salvarProduto()">
+                💾 Salvar produto
+            </button>
+
+            <button class="btn btn-voltar" onclick="limparFormulario()">
+                Limpar
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="tabela-area">
+
+        <h2>Produtos cadastrados</h2>
+
+        <input
+            class="busca"
+            id="buscaProdutos"
+            placeholder="Pesquisar produto..."
+            oninput="listarProdutos()"
+        >
+
+        <br><br>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Código</th>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Venda</th>
+                    <th>Estoque</th>
+                    <th>Ações</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="tabelaProdutos"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ESTOQUE -->
+
+<div id="estoque" class="tela container">
+
+    <div class="topo">
+
+        <h1>🏪 Controle de Estoque</h1>
+
+        <button class="btn btn-voltar" onclick="voltarPainel()">
+            ← Voltar
+        </button>
+
+    </div>
+
+    <div class="tabela-area">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Código</th>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Estoque</th>
+                    <th>Mínimo</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="tabelaEstoque"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- PDV -->
+
+<div id="pdv" class="tela container">
+
+    <div class="topo">
+
+        <h1>🛒 Frente de Caixa</h1>
+
+        <button class="btn btn-voltar" onclick="voltarPainel()">
+            ← Voltar
+        </button>
+
     </div>
 
     <div class="pdv-grid">
@@ -399,55 +666,51 @@ footer{
             <h2>Produtos</h2>
 
             <input
-                type="text"
-                id="busca"
                 class="busca"
-                placeholder="Digite o nome do produto..."
-                oninput="filtrarProdutos()"
+                id="buscaPDV"
+                placeholder="Digite o nome ou código..."
+                oninput="carregarProdutosPDV()"
             >
 
-            <div id="listaProdutos" class="produtos"></div>
+            <br><br>
+
+            <div id="listaProdutosPDV" class="produtos"></div>
 
         </div>
+
 
         <div class="carrinho-area">
 
             <h2>🛒 Carrinho</h2>
 
-            <div id="carrinho" class="carrinho">
+            <div id="carrinho">
+
                 <div class="vazio">
                     Nenhum produto adicionado.
                 </div>
+
             </div>
 
             <div class="total">
+
                 <span>Total</span>
-                <span id="total">R$ 0,00</span>
+
+                <span id="total">
+                    R$ 0,00
+                </span>
+
             </div>
 
             <div class="pagamento">
 
-                <label for="formaPagamento">
-                    Forma de pagamento
-                </label>
+                <label>Forma de pagamento</label>
 
                 <select id="formaPagamento">
 
-                    <option value="Pix">
-                        Pix
-                    </option>
-
-                    <option value="Dinheiro">
-                        Dinheiro
-                    </option>
-
-                    <option value="Cartão de débito">
-                        Cartão de débito
-                    </option>
-
-                    <option value="Cartão de crédito">
-                        Cartão de crédito
-                    </option>
+                    <option>Pix</option>
+                    <option>Dinheiro</option>
+                    <option>Cartão de débito</option>
+                    <option>Cartão de crédito</option>
 
                 </select>
 
@@ -463,152 +726,558 @@ footer{
 
 </div>
 
+
 <footer>
     Conect PDV © 2026 - Conect Cell
 </footer>
 
+
 <script>
 
-const produtos = [
+let produtos = JSON.parse(
+    localStorage.getItem("conectPDV_produtos")
+) || [
+
     {
         id:1,
+        codigo:"001",
         nome:"Carregador 33W",
-        preco:80
+        categoria:"Carregadores",
+        custo:50,
+        preco:80,
+        estoque:5,
+        estoqueMinimo:2
     },
+
     {
         id:2,
+        codigo:"002",
         nome:"Carregador 40W",
-        preco:70
+        categoria:"Carregadores",
+        custo:45,
+        preco:70,
+        estoque:5,
+        estoqueMinimo:2
     },
+
     {
         id:3,
+        codigo:"003",
         nome:"Cabo 2m",
-        preco:40
+        categoria:"Cabos",
+        custo:20,
+        preco:40,
+        estoque:20,
+        estoqueMinimo:5
     },
+
     {
         id:4,
+        codigo:"004",
         nome:"Mouse",
-        preco:25
+        categoria:"Informática",
+        custo:15,
+        preco:25,
+        estoque:5,
+        estoqueMinimo:2
     },
+
     {
         id:5,
+        codigo:"005",
         nome:"Power Bank",
-        preco:110
+        categoria:"Acessórios",
+        custo:70,
+        preco:110,
+        estoque:2,
+        estoqueMinimo:1
     }
+
 ];
+
 
 let carrinho = [];
 
-let totalVendas = 0;
-let quantidadeVendas = 0;
+let vendas = JSON.parse(
+    localStorage.getItem("conectPDV_vendas")
+) || [];
+
+
+function salvarDados(){
+
+    localStorage.setItem(
+        "conectPDV_produtos",
+        JSON.stringify(produtos)
+    );
+
+    localStorage.setItem(
+        "conectPDV_vendas",
+        JSON.stringify(vendas)
+    );
+
+}
+
 
 function dinheiro(valor){
 
-    return valor.toLocaleString("pt-BR",{
-        style:"currency",
-        currency:"BRL"
-    });
+    return Number(valor).toLocaleString(
+        "pt-BR",
+        {
+            style:"currency",
+            currency:"BRL"
+        }
+    );
 
 }
 
-function abrirPDV(){
 
-    document.getElementById("painel").style.display="none";
+function abrirTela(id){
 
-    document.getElementById("pdv").style.display="block";
+    document
+        .querySelectorAll(".tela")
+        .forEach(t => t.classList.remove("ativa"));
 
-    carregarProdutos();
+    document
+        .getElementById(id)
+        .classList.add("ativa");
+
+    if(id === "produtos"){
+        listarProdutos();
+    }
+
+    atualizarPainel();
 
 }
+
 
 function voltarPainel(){
 
-    document.getElementById("pdv").style.display="none";
-
-    document.getElementById("painel").style.display="block";
+    abrirTela("painel");
 
 }
 
-function carregarProdutos(){
 
-    const lista = document.getElementById("listaProdutos");
+function atualizarPainel(){
 
-    lista.innerHTML="";
+    const hoje = new Date().toLocaleDateString("pt-BR");
 
-    produtos.forEach(produto => {
+    const vendasHoje = vendas.filter(
+        v => v.data === hoje
+    );
 
-        const div = document.createElement("div");
+    const totalHoje = vendasHoje.reduce(
+        (soma,v) => soma + v.total,
+        0
+    );
 
-        div.className="produto";
+    const baixos = produtos.filter(
+        p => Number(p.estoque) <= Number(p.estoqueMinimo)
+    );
 
-        div.innerHTML=`
-            <h3>${produto.nome}</h3>
-            <div class="preco">${dinheiro(produto.preco)}</div>
-        `;
+    document.getElementById("vendasHoje").textContent =
+        dinheiro(totalHoje);
 
-        div.onclick=()=>{
-            adicionarCarrinho(produto.id);
-        };
+    document.getElementById("quantidadeVendas").textContent =
+        vendasHoje.length;
 
-        lista.appendChild(div);
+    document.getElementById("totalProdutos").textContent =
+        produtos.length;
 
-    });
+    document.getElementById("totalEstoqueBaixo").textContent =
+        baixos.length;
 
 }
 
-function filtrarProdutos(){
 
-    const busca = document
-        .getElementById("busca")
-        .value
+function limparFormulario(){
+
+    document.getElementById("produtoId").value="";
+    document.getElementById("codigo").value="";
+    document.getElementById("nome").value="";
+    document.getElementById("categoria").value="";
+    document.getElementById("custo").value="";
+    document.getElementById("preco").value="";
+    document.getElementById("estoque").value="";
+    document.getElementById("estoqueMinimo").value="";
+
+    document.getElementById("tituloFormulario").textContent =
+        "Novo produto";
+
+}
+
+
+function salvarProduto(){
+
+    const id =
+        document.getElementById("produtoId").value;
+
+    const codigo =
+        document.getElementById("codigo").value.trim();
+
+    const nome =
+        document.getElementById("nome").value.trim();
+
+    const categoria =
+        document.getElementById("categoria").value.trim();
+
+    const custo =
+        Number(document.getElementById("custo").value);
+
+    const preco =
+        Number(document.getElementById("preco").value);
+
+    const estoque =
+        Number(document.getElementById("estoque").value);
+
+    const estoqueMinimo =
+        Number(document.getElementById("estoqueMinimo").value);
+
+
+    if(!nome){
+
+        alert("Digite o nome do produto.");
+
+        return;
+
+    }
+
+    if(!preco || preco <= 0){
+
+        alert("Digite um preço de venda válido.");
+
+        return;
+
+    }
+
+
+    if(id){
+
+        const produto =
+            produtos.find(p => p.id == id);
+
+        produto.codigo = codigo;
+        produto.nome = nome;
+        produto.categoria = categoria;
+        produto.custo = custo;
+        produto.preco = preco;
+        produto.estoque = estoque;
+        produto.estoqueMinimo = estoqueMinimo;
+
+        alert("Produto atualizado com sucesso.");
+
+    }else{
+
+        produtos.push({
+
+            id:Date.now(),
+
+            codigo:codigo,
+
+            nome:nome,
+
+            categoria:categoria,
+
+            custo:custo,
+
+            preco:preco,
+
+            estoque:estoque,
+
+            estoqueMinimo:estoqueMinimo
+
+        });
+
+        alert("Produto cadastrado com sucesso.");
+
+    }
+
+
+    salvarDados();
+
+    limparFormulario();
+
+    listarProdutos();
+
+    atualizarPainel();
+
+}
+
+
+function listarProdutos(){
+
+    const tabela =
+        document.getElementById("tabelaProdutos");
+
+    const busca =
+        (document.getElementById("buscaProdutos")?.value || "")
         .toLowerCase();
 
-    const lista = document.getElementById("listaProdutos");
+    tabela.innerHTML="";
 
-    lista.innerHTML="";
 
     produtos
-    .filter(produto =>
-        produto.nome.toLowerCase().includes(busca)
+
+    .filter(p =>
+        p.nome.toLowerCase().includes(busca) ||
+        p.codigo.toLowerCase().includes(busca)
     )
-    .forEach(produto => {
 
-        const div = document.createElement("div");
+    .forEach(p => {
 
-        div.className="produto";
+        const tr =
+            document.createElement("tr");
 
-        div.innerHTML=`
-            <h3>${produto.nome}</h3>
-            <div class="preco">${dinheiro(produto.preco)}</div>
+        const baixo =
+            Number(p.estoque) <= Number(p.estoqueMinimo);
+
+        tr.innerHTML = `
+
+            <td>${p.codigo}</td>
+
+            <td>
+                <strong>${p.nome}</strong>
+            </td>
+
+            <td>${p.categoria || "-"}</td>
+
+            <td>${dinheiro(p.preco)}</td>
+
+            <td>
+                ${p.estoque}
+            </td>
+
+            <td>
+
+                <div class="acoes">
+
+                    <button
+                        class="btn btn-azul"
+                        onclick="editarProduto(${p.id})">
+                        Editar
+                    </button>
+
+                    <button
+                        class="btn btn-vermelho"
+                        onclick="excluirProduto(${p.id})">
+                        Excluir
+                    </button>
+
+                </div>
+
+            </td>
+
         `;
 
-        div.onclick=()=>{
-            adicionarCarrinho(produto.id);
-        };
-
-        lista.appendChild(div);
+        tabela.appendChild(tr);
 
     });
 
 }
+
+
+function editarProduto(id){
+
+    const p =
+        produtos.find(x => x.id === id);
+
+    if(!p) return;
+
+    document.getElementById("produtoId").value = p.id;
+    document.getElementById("codigo").value = p.codigo;
+    document.getElementById("nome").value = p.nome;
+    document.getElementById("categoria").value = p.categoria;
+    document.getElementById("custo").value = p.custo;
+    document.getElementById("preco").value = p.preco;
+    document.getElementById("estoque").value = p.estoque;
+    document.getElementById("estoqueMinimo").value = p.estoqueMinimo;
+
+    document.getElementById("tituloFormulario").textContent =
+        "Editar produto";
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+function excluirProduto(id){
+
+    const p =
+        produtos.find(x => x.id === id);
+
+    if(!p) return;
+
+    const confirmar =
+        confirm(
+            "Deseja excluir o produto " +
+            p.nome +
+            "?"
+        );
+
+    if(!confirmar) return;
+
+    produtos =
+        produtos.filter(x => x.id !== id);
+
+    salvarDados();
+
+    listarProdutos();
+
+    atualizarPainel();
+
+}
+
+
+function atualizarEstoque(){
+
+    const tabela =
+        document.getElementById("tabelaEstoque");
+
+    tabela.innerHTML="";
+
+    produtos.forEach(p => {
+
+        const baixo =
+            Number(p.estoque) <= Number(p.estoqueMinimo);
+
+        const tr =
+            document.createElement("tr");
+
+        tr.innerHTML = `
+
+            <td>${p.codigo}</td>
+
+            <td>
+                <strong>${p.nome}</strong>
+            </td>
+
+            <td>${p.categoria || "-"}</td>
+
+            <td>${p.estoque}</td>
+
+            <td>${p.estoqueMinimo}</td>
+
+            <td>
+
+                ${
+                    baixo
+
+                    ? '<span class="badge badge-baixo">ESTOQUE BAIXO</span>'
+
+                    : '<span class="badge badge-ok">NORMAL</span>'
+                }
+
+            </td>
+
+        `;
+
+        tabela.appendChild(tr);
+
+    });
+
+}
+
+
+function carregarProdutosPDV(){
+
+    const area =
+        document.getElementById("listaProdutosPDV");
+
+    const busca =
+        (
+            document.getElementById("buscaPDV")?.value || ""
+        ).toLowerCase();
+
+    area.innerHTML="";
+
+
+    produtos
+
+    .filter(p =>
+        p.nome.toLowerCase().includes(busca) ||
+        p.codigo.toLowerCase().includes(busca)
+    )
+
+    .forEach(p => {
+
+        const div =
+            document.createElement("div");
+
+        div.className="produto";
+
+        div.innerHTML = `
+
+            <h3>${p.nome}</h3>
+
+            <div class="preco">
+                ${dinheiro(p.preco)}
+            </div>
+
+            <div class="estoque-produto">
+                Estoque: ${p.estoque}
+            </div>
+
+        `;
+
+        div.onclick = () => {
+
+            adicionarCarrinho(p.id);
+
+        };
+
+        area.appendChild(div);
+
+    });
+
+}
+
 
 function adicionarCarrinho(id){
 
-    const produto = produtos.find(p => p.id === id);
+    const produto =
+        produtos.find(p => p.id === id);
 
-    const existente = carrinho.find(p => p.id === id);
+    if(!produto) return;
+
+    if(Number(produto.estoque) <= 0){
+
+        alert("Produto sem estoque.");
+
+        return;
+
+    }
+
+
+    const existente =
+        carrinho.find(p => p.id === id);
+
 
     if(existente){
+
+        if(existente.quantidade >= produto.estoque){
+
+            alert("Quantidade disponível em estoque atingida.");
+
+            return;
+
+        }
 
         existente.quantidade++;
 
     }else{
 
         carrinho.push({
+
             id:produto.id,
+
             nome:produto.nome,
+
             preco:produto.preco,
+
             quantidade:1
+
         });
 
     }
@@ -617,41 +1286,65 @@ function adicionarCarrinho(id){
 
 }
 
-function alterarQuantidade(id, quantidade){
 
-    const item = carrinho.find(p => p.id === id);
+function alterarQuantidade(id,valor){
 
-    if(!item) return;
+    const item =
+        carrinho.find(p => p.id === id);
 
-    item.quantidade += quantidade;
+    const produto =
+        produtos.find(p => p.id === id);
 
-    if(item.quantidade <= 0){
+    if(!item || !produto) return;
 
-        carrinho = carrinho.filter(p => p.id !== id);
+
+    if(valor > 0 &&
+       item.quantidade >= produto.estoque){
+
+        alert("Quantidade disponível em estoque atingida.");
+
+        return;
 
     }
 
+
+    item.quantidade += valor;
+
+
+    if(item.quantidade <= 0){
+
+        carrinho =
+            carrinho.filter(p => p.id !== id);
+
+    }
+
+
     atualizarCarrinho();
 
 }
+
 
 function removerProduto(id){
 
-    carrinho = carrinho.filter(p => p.id !== id);
+    carrinho =
+        carrinho.filter(p => p.id !== id);
 
     atualizarCarrinho();
 
 }
 
+
 function atualizarCarrinho(){
 
-    const area = document.getElementById("carrinho");
+    const area =
+        document.getElementById("carrinho");
 
     area.innerHTML="";
 
+
     if(carrinho.length === 0){
 
-        area.innerHTML=`
+        area.innerHTML = `
             <div class="vazio">
                 Nenhum produto adicionado.
             </div>
@@ -664,24 +1357,30 @@ function atualizarCarrinho(){
 
     }
 
-    let valorTotal=0;
+
+    let total = 0;
+
 
     carrinho.forEach(item => {
 
         const subtotal =
             item.preco * item.quantidade;
 
-        valorTotal += subtotal;
+        total += subtotal;
 
-        const div = document.createElement("div");
+
+        const div =
+            document.createElement("div");
 
         div.className="item";
 
-        div.innerHTML=`
+        div.innerHTML = `
 
             <div class="item-topo">
 
-                <strong>${item.nome}</strong>
+                <strong>
+                    ${item.nome}
+                </strong>
 
                 <strong>
                     ${dinheiro(subtotal)}
@@ -691,7 +1390,8 @@ function atualizarCarrinho(){
 
             <div class="item-controle">
 
-                <button onclick="alterarQuantidade(${item.id},-1)">
+                <button
+                    onclick="alterarQuantidade(${item.id},-1)">
                     -
                 </button>
 
@@ -699,7 +1399,8 @@ function atualizarCarrinho(){
                     ${item.quantidade}
                 </span>
 
-                <button onclick="alterarQuantidade(${item.id},1)">
+                <button
+                    onclick="alterarQuantidade(${item.id},1)">
                     +
                 </button>
 
@@ -717,61 +1418,109 @@ function atualizarCarrinho(){
 
     });
 
+
     document.getElementById("total").textContent =
-        dinheiro(valorTotal);
+        dinheiro(total);
 
 }
+
 
 function finalizarVenda(){
 
     if(carrinho.length === 0){
 
-        alert("Adicione pelo menos um produto ao carrinho.");
+        alert("Adicione um produto ao carrinho.");
 
         return;
 
     }
 
-    const total = carrinho.reduce(
-        (soma,item) =>
-        soma + (item.preco * item.quantidade),
-        0
-    );
+
+    const total =
+        carrinho.reduce(
+            (soma,item) =>
+            soma + item.preco * item.quantidade,
+            0
+        );
+
 
     const pagamento =
         document.getElementById("formaPagamento").value;
 
-    const confirmar = confirm(
-        "Finalizar venda de " +
-        dinheiro(total) +
-        " via " +
-        pagamento +
-        "?"
-    );
+
+    const confirmar =
+        confirm(
+            "Finalizar venda?\n\n" +
+            "Total: " + dinheiro(total) +
+            "\nPagamento: " + pagamento
+        );
+
 
     if(!confirmar) return;
 
-    totalVendas += total;
 
-    quantidadeVendas++;
+    /* BAIXA NO ESTOQUE */
 
-    document.getElementById("vendasHoje").textContent =
-        dinheiro(totalVendas);
+    carrinho.forEach(item => {
 
-    document.getElementById("quantidadeVendas").textContent =
-        quantidadeVendas;
+        const produto =
+            produtos.find(p => p.id === item.id);
+
+        if(produto){
+
+            produto.estoque -= item.quantidade;
+
+        }
+
+    });
+
+
+    const agora =
+        new Date();
+
+    const venda = {
+
+        id:Date.now(),
+
+        data:agora.toLocaleDateString("pt-BR"),
+
+        hora:agora.toLocaleTimeString("pt-BR"),
+
+        total:total,
+
+        pagamento:pagamento,
+
+        itens:[...carrinho]
+
+    };
+
+
+    vendas.push(venda);
+
+    salvarDados();
+
 
     alert(
-        "Venda finalizada com sucesso!\n\n" +
+        "✅ Venda finalizada!\n\n" +
         "Total: " + dinheiro(total) +
         "\nPagamento: " + pagamento
     );
+
 
     carrinho=[];
 
     atualizarCarrinho();
 
+    carregarProdutosPDV();
+
+    atualizarPainel();
+
 }
+
+
+salvarDados();
+
+atualizarPainel();
 
 </script>
 
