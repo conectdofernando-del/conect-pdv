@@ -1500,6 +1500,29 @@ function imprimirFechamento(){
     atualizarFechamentoCaixa();
     window.print();
 }
+
+    function fecharCaixa(){
+
+    const confirmar = confirm("Deseja realmente fechar o caixa de hoje?");
+
+    if(!confirmar){
+        return;
+    }
+
+    const fechamento = {
+        data: new Date().toLocaleDateString("pt-BR"),
+        hora: new Date().toLocaleTimeString("pt-BR")
+    };
+
+    localStorage.setItem(
+        "conectPDV_ultimoFechamento",
+        JSON.stringify(fechamento)
+    );
+
+    alert("✅ Caixa fechado com sucesso!");
+
+    voltarPainel();
+}
     
 function limparFormulario(){
 
