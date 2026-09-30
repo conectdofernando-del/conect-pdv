@@ -662,7 +662,23 @@ th{
             ← Voltar
         </button>
     </div>
+<div class="card" style="margin-bottom:20px;">
+    <h3>📅 Período do relatório</h3>
 
+    <label>Data inicial:</label>
+    <input type="date" id="relatorioDataInicial">
+
+    <label>Data final:</label>
+    <input type="date" id="relatorioDataFinal">
+
+    <button class="btn" onclick="filtrarRelatorio()">
+        Filtrar
+    </button>
+
+    <button class="btn" onclick="limparFiltroRelatorio()">
+        Hoje
+    </button>
+</div>
     <div class="cards">
 
         <div class="card">
@@ -1183,7 +1199,145 @@ function atualizarRelatorios(){
     });
 
 }
+function filtrarRelatorio(){
 
+    const dataInicial = document.getElementById("relatorioDataInicial").value;
+    const dataFinal = document.getElementById("relatorioDataFinal").value;
+
+    if(!dataInicial || !dataFinal){
+        alert("Selecione a data inicial e a data final.");
+        return;
+    }
+
+    const inicio = new Date(dataInicial + "T00:00:00");
+    const fim = new Date(dataFinal + "T23:59:59");
+
+    vendas = JSON.parse(localStorage.getItem("conectPDV_vendas")) || [];
+    produtos = JSON.parse(localStorage.getItem("conectPDV_produtos")) || [];
+
+    const vendasFiltradas = vendas.filter(venda => {
+        const partes = venda.data.split("/");
+        const dataVenda = new Date(
+            Number(partes[2]),
+            Number(partes[1]) - 1,
+            Number(partes[0])
+        );
+
+        return dataVenda >= inicio && dataVenda <= fim;
+    });
+
+    atualizarRelatorioComVendas(vendasFiltradas);
+}
+
+
+function limparFiltroRelatorio(){
+
+    document.getElementById("relatorioDataInicial").value = "";
+    document.getElementById("relatorioDataFinal").value = "";
+
+    atualizarRelatorios();
+}
+function atualizarRelatorioComVendas(vendasSelecionadas){
+
+    let faturamento = 0;
+    let custoTotal = 0;
+
+    vendasSelecionadas.forEach(venda => {
+
+        faturamento += Number(venda.total);
+
+        venda.itens.forEach(item => {
+
+            const produto = produtos.find(
+                p => p.id === item.id
+            );
+
+            if(produto){
+                custoTotal +=
+                    Number(produto.custo) *
+                    Number(item.quantidade);
+            }
+
+        });
+
+    });
+
+    const lucro = faturamento - custoTotal;
+
+    document.getElementById("relatorioFaturamento").textContent =
+        dinheiro(faturamento);
+
+    document.getElementById("relatorioVendas").textContent =
+        vendasSelecionadas.length;
+
+    document.getElementById("relatorioCusto").textContent =
+        dinheiro(custoTotal);
+
+    document.getElementById("relatorioLucro").textContent =
+        dinheiro(lucro);
+
+    const pagamentos = {};
+
+    vendasSelecionadas.forEach(venda => {
+
+        if(!pagamentos[venda.pagamento]){
+            pagamentos[venda.pagamento] = {
+                quantidade: 0,
+                total: 0
+            };
+        }
+
+        pagamentos[venda.pagamento].quantidade++;
+        pagamentos[venda.pagamento].total +=
+            Number(venda.total);
+
+    });
+
+    const tabelaPagamentos =
+        document.getElementById("tabelaPagamentos");
+
+    tabelaPagamentos.innerHTML = "";
+
+    Object.keys(pagamentos).forEach(pagamento => {
+
+        const dados = pagamentos[pagamento];
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${pagamento}</td>
+            <td>${dados.quantidade}</td>
+            <td>${dinheiro(dados.total)}</td>
+        `;
+
+        tabelaPagamentos.appendChild(tr);
+
+    });
+
+    const tabelaVendas =
+        document.getElementById("tabelaVendas");
+
+    tabelaVendas.innerHTML = "";
+
+    vendasSelecionadas
+        .slice()
+        .reverse()
+        .forEach(venda => {
+
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${venda.data}</td>
+                <td>${venda.hora}</td>
+                <td>${venda.pagamento}</td>
+                <td>${dinheiro(venda.total)}</td>
+            `;
+
+            tabelaVendas.appendChild(tr);
+
+        });
+
+}
+    
 function limparFormulario(){
 
     document.getElementById("produtoId").value="";
