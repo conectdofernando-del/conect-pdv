@@ -489,10 +489,73 @@ th{
             Sobre o sistema
         </button>
 
+        <button onclick="abrirTela('fechamentoCaixa')">
+    <span class="icone">💰</span>
+    Fechamento de Caixa
+</button>
+
     </div>
 
 </div>
+<!-- FECHAMENTO DE CAIXA -->
+<div id="fechamentoCaixa" class="tela container">
 
+    <div class="topo">
+        <h1>💰 Fechamento de Caixa</h1>
+
+        <button class="btn btn-voltar" onclick="voltarPainel()">
+            ← Voltar
+        </button>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Faturamento do dia</h3>
+            <strong id="fechamentoFaturamento">R$ 0,00</strong>
+        </div>
+
+        <div class="card">
+            <h3>Vendas realizadas</h3>
+            <strong id="fechamentoVendas">0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Custo dos produtos</h3>
+            <strong id="fechamentoCusto">R$ 0,00</strong>
+        </div>
+
+        <div class="card">
+            <h3>Lucro estimado</h3>
+            <strong id="fechamentoLucro">R$ 0,00</strong>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h2>💳 Resumo por forma de pagamento</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Forma de pagamento</th>
+                    <th>Quantidade</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody id="fechamentoPagamentos">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <button class="btn" onclick="imprimirFechamento()">
+            🖨️ Imprimir fechamento
+        </button>
+    </div>
+
+</div>
 
 <!-- PRODUTOS -->
 
@@ -1046,7 +1109,9 @@ function abrirTela(id){
     if(id === "produtos"){
         listarProdutos();
     }
-
+if(id === "fechamentoCaixa"){
+    atualizarFechamentoCaixa();
+}
     atualizarPainel();
 
 }
@@ -1336,6 +1401,102 @@ function atualizarRelatorioComVendas(vendasSelecionadas){
 
         });
 
+}
+
+    function atualizarFechamentoCaixa(){
+
+    const vendas = JSON.parse(
+        localStorage.getItem("conectPDV_vendas")
+    ) || [];
+
+    const produtos = JSON.parse(
+        localStorage.getItem("conectPDV_produtos")
+    ) || [];
+
+    const hoje = new Date().toLocaleDateString("pt-BR");
+
+    const vendasHoje = vendas.filter(venda =>
+        venda.data === hoje
+    );
+
+    let faturamento = 0;
+    let custoTotal = 0;
+    const pagamentos = {};
+
+    vendasHoje.forEach(venda => {
+
+        faturamento += Number(venda.total) || 0;
+
+        if(venda.itens){
+            venda.itens.forEach(item => {
+
+                const produto = produtos.find(
+                    p => p.id === item.id
+                );
+
+                if(produto){
+                    custoTotal +=
+                        Number(produto.custo) *
+                        Number(item.quantidade);
+                }
+
+            });
+        }
+
+        const forma = venda.pagamento || "Não informado";
+
+        if(!pagamentos[forma]){
+            pagamentos[forma] = {
+                quantidade: 0,
+                total: 0
+            };
+        }
+
+        pagamentos[forma].quantidade++;
+        pagamentos[forma].total += Number(venda.total) || 0;
+
+    });
+
+    const lucro = faturamento - custoTotal;
+
+    document.getElementById("fechamentoFaturamento").textContent =
+        dinheiro(faturamento);
+
+    document.getElementById("fechamentoVendas").textContent =
+        vendasHoje.length;
+
+    document.getElementById("fechamentoCusto").textContent =
+        dinheiro(custoTotal);
+
+    document.getElementById("fechamentoLucro").textContent =
+        dinheiro(lucro);
+
+    const tabela = document.getElementById("fechamentoPagamentos");
+
+    tabela.innerHTML = "";
+
+    Object.keys(pagamentos).forEach(forma => {
+
+        const dados = pagamentos[forma];
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${forma}</td>
+            <td>${dados.quantidade}</td>
+            <td>${dinheiro(dados.total)}</td>
+        `;
+
+        tabela.appendChild(tr);
+
+    });
+
+}
+
+
+function imprimirFechamento(){
+    atualizarFechamentoCaixa();
+    window.print();
 }
     
 function limparFormulario(){
