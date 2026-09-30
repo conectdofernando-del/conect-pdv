@@ -1432,7 +1432,7 @@ function atualizarEstoque(){
 
     tabela.innerHTML="";
 
-    produtos.forEach(p => {
+    const termo = document.getElementById("buscaEstoque").value.toLowerCase().trim();  produtos .filter(p =>     !termo ||     String(p.codigo).toLowerCase().includes(termo) ||     String(p.nome).toLowerCase().includes(termo) ||     String(p.categoria || "").toLowerCase().includes(termo) ) .forEach(p => {
 
         const baixo =
             Number(p.estoque) <= Number(p.estoqueMinimo);
