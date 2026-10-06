@@ -1518,7 +1518,72 @@ function imprimirFechamento(){
         "conectPDV_ultimoFechamento",
         JSON.stringify(fechamento)
     );
+// Salvar resumo completo do fechamento
+const vendas = JSON.parse(
+    localStorage.getItem("conectPDV_vendas")
+) || [];
 
+const produtos = JSON.parse(
+    localStorage.getItem("conectPDV_produtos")
+) || [];
+
+const hoje = new Date().toLocaleDateString("pt-BR");
+
+const vendasHoje = vendas.filter(venda =>
+    venda.data === hoje
+);
+
+let faturamento = 0;
+let custoTotal = 0;
+const pagamentos = {};
+
+vendasHoje.forEach(venda => {
+    faturamento += Number(venda.total) || 0;
+
+    if (venda.itens) {
+        venda.itens.forEach(item => {
+            const produto = produtos.find(
+                p => p.id === item.id
+            );
+
+            if (produto) {
+                custoTotal +=
+                    Number(produto.custo) *
+                    Number(item.quantidade);
+            }
+        });
+    }
+
+    const forma = venda.pagamento || "Não informado";
+
+    if (!pagamentos[forma]) {
+        pagamentos[forma] = {
+            quantidade: 0,
+            total: 0
+        };
+    }
+
+    pagamentos[forma].quantidade++;
+    pagamentos[forma].total += Number(venda.total) || 0;
+});
+
+const historico =
+    JSON.parse(localStorage.getItem("conectPDV_fechamentos")) || [];
+
+historico.push({
+    data: fechamento.data,
+    hora: fechamento.hora,
+    vendas: vendasHoje.length,
+    faturamento: faturamento,
+    custo: custoTotal,
+    lucro: faturamento - custoTotal,
+    pagamentos: pagamentos
+});
+
+localStorage.setItem(
+    "conectPDV_fechamentos",
+    JSON.stringify(historico)
+);
     alert("✅ Caixa fechado com sucesso!");
 
     voltarPainel();
