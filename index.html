@@ -544,7 +544,30 @@ th{
             ← Voltar
         </button>
     </div>
+<!-- FILTRO DO HISTÓRICO DE VENDAS -->
+<div class="card" style="margin-bottom:20px;">
+    <div style="display:flex; gap:15px; align-items:end; flex-wrap:wrap;">
 
+        <div>
+            <label><strong>Data inicial</strong></label><br>
+            <input type="date" id="filtroDataInicial">
+        </div>
+
+        <div>
+            <label><strong>Data final</strong></label><br>
+            <input type="date" id="filtroDataFinal">
+        </div>
+
+        <button class="btn" onclick="filtrarHistoricoVendas()">
+            🔎 Filtrar
+        </button>
+
+        <button class="btn" onclick="limparFiltroHistorico()">
+            🧹 Limpar
+        </button>
+
+    </div>
+</div>
   <div class="cards">
     <div class="card">
         <h3>🧾 Vendas</h3>
@@ -1617,13 +1640,53 @@ function carregarHistoricoFechamentos(){
 
 }
 
-    
+function filtrarHistoricoVendas(){
+    carregarHistoricoVendas();
+}
+
+function limparFiltroHistorico(){
+    document.getElementById("filtroDataInicial").value = "";
+    document.getElementById("filtroDataFinal").value = "";
+    carregarHistoricoVendas();
+}    
     function carregarHistoricoVendas(){
 
     const vendas = JSON.parse(
         localStorage.getItem("conectPDV_vendas")
+  
+    
     ) || [];
+const dataInicial = document.getElementById("filtroDataInicial")?.value || "";
+const dataFinal = document.getElementById("filtroDataFinal")?.value || "";
 
+let vendasFiltradas = vendas.filter(venda => {
+
+    if(!dataInicial && !dataFinal){
+        return true;
+    }
+
+    if(!venda.data){
+        return false;
+    }
+
+    const partes = venda.data.split("/");
+
+    if(partes.length !== 3){
+        return false;
+    }
+
+    const dataVenda = `${partes[2]}-${partes[1]}-${partes[0]}`;
+
+    if(dataInicial && dataVenda < dataInicial){
+        return false;
+    }
+
+    if(dataFinal && dataVenda > dataFinal){
+        return false;
+    }
+
+    return true;
+});
    let faturamento = 0;
 let custoTotal = 0;
 
@@ -1631,8 +1694,7 @@ const produtosCadastrados = JSON.parse(
     localStorage.getItem("conectPDV_produtos")
 ) || [];
 
-vendas.forEach(venda => {
-
+vendasFiltradas.forEach(venda => {
     faturamento += Number(venda.total) || 0;
 
     if(venda.itens){
@@ -1656,7 +1718,7 @@ vendas.forEach(venda => {
 const lucro = faturamento - custoTotal;
 
 document.getElementById("historicoTotalVendas").textContent =
-    vendas.length;
+    vendasFiltradas.length;
 
 document.getElementById("historicoFaturamento").textContent =
     dinheiro(faturamento);
@@ -1671,7 +1733,7 @@ document.getElementById("historicoLucro").textContent =
 
     tabela.innerHTML = "";
 
-    vendas.slice().reverse().forEach(venda => {
+    vendasFiltradas.slice().reverse().forEach(venda => {
 
         const tr = document.createElement("tr");
 
