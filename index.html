@@ -493,11 +493,43 @@ th{
     <span class="icone">💰</span>
     Fechamento de Caixa
 </button>
-
+<button onclick="abrirTela('historicoFechamentos')">
+    <span class="icone">📚</span>
+    Histórico de Fechamentos
+</button>
     </div>
 
 </div>
-<!-- FECHAMENTO DE CAIXA -->
+<!-- HISTÓRICO DE FECHAMENTOS -->
+<div id="historicoFechamentos" class="tela container">
+
+    <div class="topo">
+        <h1>📚 Histórico de Fechamentos</h1>
+
+        <button class="btn btn-voltar" onclick="voltarPainel()">
+            ← Voltar
+        </button>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Vendas</th>
+                    <th>Faturamento</th>
+                    <th>Custo</th>
+                    <th>Lucro</th>
+                </tr>
+            </thead>
+
+            <tbody id="listaHistoricoFechamentos">
+            </tbody>
+        </table>
+    </div>
+
+</div><!-- FECHAMENTO DE CAIXA -->
 <div id="fechamentoCaixa" class="tela container">
 
     <div class="topo">
