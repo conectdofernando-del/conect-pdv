@@ -545,6 +545,28 @@ th{
         </button>
     </div>
 
+  <div class="cards">
+    <div class="card">
+        <h3>🧾 Vendas</h3>
+        <div class="valor" id="historicoTotalVendas">0</div>
+    </div>
+
+    <div class="card">
+        <h3>💰 Faturamento</h3>
+        <div class="valor" id="historicoFaturamento">R$ 0,00</div>
+    </div>
+
+    <div class="card">
+        <h3>📦 Custo</h3>
+        <div class="valor" id="historicoCusto">R$ 0,00</div>
+    </div>
+
+    <div class="card">
+        <h3>📈 Lucro</h3>
+        <div class="valor" id="historicoLucro">R$ 0,00</div>
+    </div>
+</div> 
+    
     <div class="card">
         <table>
             <thead>
@@ -1602,7 +1624,50 @@ function carregarHistoricoFechamentos(){
         localStorage.getItem("conectPDV_vendas")
     ) || [];
 
-    const tabela = document.getElementById("listaHistoricoVendas");
+   let faturamento = 0;
+let custoTotal = 0;
+
+const produtosCadastrados = JSON.parse(
+    localStorage.getItem("conectPDV_produtos")
+) || [];
+
+vendas.forEach(venda => {
+
+    faturamento += Number(venda.total) || 0;
+
+    if(venda.itens){
+        venda.itens.forEach(item => {
+
+            const produto = produtosCadastrados.find(
+                p => p.id === item.id
+            );
+
+            if(produto){
+                custoTotal +=
+                    (Number(produto.custo) || 0) *
+                    (Number(item.quantidade) || 1);
+            }
+
+        });
+    }
+
+});
+
+const lucro = faturamento - custoTotal;
+
+document.getElementById("historicoTotalVendas").textContent =
+    vendas.length;
+
+document.getElementById("historicoFaturamento").textContent =
+    dinheiro(faturamento);
+
+document.getElementById("historicoCusto").textContent =
+    dinheiro(custoTotal);
+
+document.getElementById("historicoLucro").textContent =
+    dinheiro(lucro);
+        
+        const tabela = document.getElementById("listaHistoricoVendas");
 
     tabela.innerHTML = "";
 
