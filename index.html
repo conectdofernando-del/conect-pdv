@@ -1530,7 +1530,34 @@ function atualizarRelatorioComVendas(vendasSelecionadas){
 
 }
 
+function carregarHistoricoFechamentos(){
 
+    const historico = JSON.parse(
+        localStorage.getItem("conectPDV_fechamentos")
+    ) || [];
+
+    const tabela = document.getElementById("listaHistoricoFechamentos");
+
+    tabela.innerHTML = "";
+
+    historico.slice().reverse().forEach(fechamento => {
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${fechamento.data}</td>
+            <td>${fechamento.hora}</td>
+            <td>${fechamento.vendas}</td>
+            <td>${dinheiro(fechamento.faturamento)}</td>
+            <td>${dinheiro(fechamento.custo)}</td>
+            <td>${dinheiro(fechamento.lucro)}</td>
+        `;
+
+        tabela.appendChild(tr);
+
+    });
+
+}
 function imprimirFechamento(){
     atualizarFechamentoCaixa();
     window.print();
