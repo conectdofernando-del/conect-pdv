@@ -1594,6 +1594,50 @@ function carregarHistoricoFechamentos(){
     });
 
 }
+
+    
+    function carregarHistoricoVendas(){
+
+    const vendas = JSON.parse(
+        localStorage.getItem("conectPDV_vendas")
+    ) || [];
+
+    const tabela = document.getElementById("listaHistoricoVendas");
+
+    tabela.innerHTML = "";
+
+    vendas.slice().reverse().forEach(venda => {
+
+        const tr = document.createElement("tr");
+
+        let produtos = "Não informado";
+
+        if(venda.itens && venda.itens.length){
+
+            produtos = venda.itens.map(item => {
+
+                const nome = item.nome || item.produto || "Produto";
+                const quantidade = Number(item.quantidade) || 1;
+
+                return `${quantidade}x ${nome}`;
+
+            }).join(", ");
+        }
+
+        tr.innerHTML = `
+            <td>${venda.data || "-"}</td>
+            <td>${venda.hora || "-"}</td>
+            <td>${produtos}</td>
+            <td>${venda.pagamento || "Não informado"}</td>
+            <td>${dinheiro(Number(venda.total) || 0)}</td>
+        `;
+
+        tabela.appendChild(tr);
+
+    });
+
+}
+    
 function imprimirFechamento(){
     atualizarFechamentoCaixa();
     window.print();
