@@ -497,6 +497,10 @@ th{
     <span class="icone">📚</span>
     Histórico de Fechamentos
 </button>
+        <button onclick="abrirTela('historicoVendas')">
+    <span class="icone">🧾</span>
+    Histórico de Vendas
+</button>
     </div>
 
 </div>
@@ -529,7 +533,37 @@ th{
         </table>
     </div>
 
-</div><!-- FECHAMENTO DE CAIXA -->
+</div>
+ <!-- HISTÓRICO DE VENDAS -->
+<div id="historicoVendas" class="tela container">
+
+    <div class="topo">
+        <h1>🧾 Histórico de Vendas</h1>
+
+        <button class="btn btn-voltar" onclick="voltarPainel()">
+            ← Voltar
+        </button>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Produtos</th>
+                    <th>Pagamento</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody id="listaHistoricoVendas">
+            </tbody>
+        </table>
+    </div>
+
+</div>   
+    <!-- FECHAMENTO DE CAIXA -->
 <div id="fechamentoCaixa" class="tela container">
 
     <div class="topo">
