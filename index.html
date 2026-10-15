@@ -1664,6 +1664,55 @@ document.getElementById("fechamentoValorInicial").textContent =
     document.getElementById("fechamentoLucro").textContent =
         dinheiro(lucro);
 
+const valorInicial = aberturaAtual
+    ? Number(aberturaAtual.valorInicial) || 0
+    : 0;
+
+const vendasDinheiro = Object.entries(pagamentos)
+    .filter(([forma]) =>
+        forma.trim().toLowerCase() === "dinheiro"
+    )
+    .reduce((total, [, dados]) =>
+        total + (Number(dados.total) || 0), 0
+    );
+
+const saldoEsperado = valorInicial + vendasDinheiro;
+
+document.getElementById("fechamentoSaldoEsperado").textContent =
+    dinheiro(saldoEsperado);
+
+const campoContado =
+    document.getElementById("fechamentoDinheiroContado");
+
+function calcularDiferencaCaixa() {
+    const resultado =
+        document.getElementById("fechamentoDiferenca");
+
+    if (campoContado.value.trim() === "") {
+        resultado.textContent = "Aguardando contagem";
+        return;
+    }
+
+    const contado = Number(campoContado.value);
+
+    if (!Number.isFinite(contado) || contado < 0) {
+        resultado.textContent = "Valor inválido";
+        return;
+    }
+
+    const diferenca = contado - saldoEsperado;
+
+    resultado.textContent =
+        diferenca < 0
+            ? "Falta: " + dinheiro(Math.abs(diferenca))
+            : diferenca > 0
+                ? "Sobra: " + dinheiro(diferenca)
+                : "Caixa correto: R$ 0,00";
+}
+
+campoContado.oninput = calcularDiferencaCaixa;
+calcularDiferencaCaixa();
+
     const tabela = document.getElementById("fechamentoPagamentos");
 
     tabela.innerHTML = "";
