@@ -489,6 +489,11 @@ th{
             Sobre o sistema
         </button>
 
+<button onclick="abrirTela('aberturaCaixa')">
+    <span class="icone">💰</span>
+    Abertura de Caixa
+</button>
+
         <button onclick="abrirTela('fechamentoCaixa')">
     <span class="icone">💰</span>
     Fechamento de Caixa
@@ -608,6 +613,41 @@ th{
     </div>
 
 </div>   
+
+<!-- ABERTURA DE CAIXA -->
+<div id="aberturaCaixa" class="tela container">
+
+    <div class="topo">
+        <h1>💰 Abertura de Caixa</h1>
+
+        <button class="btn btn-voltar"
+                onclick="voltarPainel()">
+            ← Voltar
+        </button>
+    </div>
+
+    <div class="card">
+        <h3>Iniciar Caixa</h3>
+
+        <label>Responsável pelo caixa</label>
+        <input type="text"
+               id="caixaResponsavel"
+               placeholder="Nome do funcionário">
+
+        <label>Valor inicial (R$)</label>
+        <input type="number"
+               id="caixaValorInicial"
+               min="0"
+               step="0.01"
+               placeholder="0,00">
+
+        <button onclick="confirmarAberturaCaixa()">
+            ✅ Confirmar Abertura
+        </button>
+    </div>
+
+</div>
+
     <!-- FECHAMENTO DE CAIXA -->
 <div id="fechamentoCaixa" class="tela container">
 
@@ -1770,7 +1810,59 @@ function imprimirFechamento(){
     window.print();
 }
 
+
+function confirmarAberturaCaixa() {
+
+    const responsavel = document.getElementById("caixaResponsavel").value.trim();
+    const valor = Number(document.getElementById("caixaValorInicial").value);
+
+    if (!responsavel) {
+        alert("Informe o responsável pelo caixa!");
+        return;
+    }
+
+    if (!Number.isFinite(valor) || valor < 0) {
+        alert("Informe um valor inicial válido!");
+        return;
+    }
+
+    const caixaAtual = JSON.parse(
+        localStorage.getItem("conectPDV_caixaAberto") || "null"
+    );
+
+    if (caixaAtual) {
+        alert("Já existe um caixa aberto!");
+        return;
+    }
+
+    const abertura = {
+        responsavel: responsavel,
+        valorInicial: valor,
+        data: new Date().toLocaleDateString("pt-BR"),
+        hora: new Date().toLocaleTimeString("pt-BR"),
+        status: "aberto"
+    };
+
+    localStorage.setItem(
+        "conectPDV_caixaAberto",
+        JSON.stringify(abertura)
+    );
+
+    alert("✅ Caixa aberto com sucesso!");
+
+    voltarPainel();
+}
+
     function fecharCaixa(){
+
+const caixaAberto = JSON.parse(
+    localStorage.getItem("conectPDV_caixaAberto") || "null"
+);
+
+if (!caixaAberto || caixaAberto.status !== "aberto") {
+    alert("⚠️ Não existe caixa aberto! Faça a abertura primeiro.");
+    return;
+}
 
     const confirmar = confirm("Deseja realmente fechar o caixa de hoje?");
 
@@ -1840,6 +1932,11 @@ const historico =
     JSON.parse(localStorage.getItem("conectPDV_fechamentos")) || [];
 
 historico.push({
+
+responsavel: caixaAberto.responsavel,
+valorInicial: caixaAberto.valorInicial,
+
+    
     data: fechamento.data,
     hora: fechamento.hora,
     vendas: vendasHoje.length,
@@ -1853,6 +1950,8 @@ localStorage.setItem(
     "conectPDV_fechamentos",
     JSON.stringify(historico)
 );
+
+localStorage.removeItem("conectPDV_caixaAberto");
     alert("✅ Caixa fechado com sucesso!");
 
     voltarPainel();
