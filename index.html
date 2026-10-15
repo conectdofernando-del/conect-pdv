@@ -661,7 +661,12 @@ th{
 
     <div class="cards">
 
-        <div class="card">
+  
+<div class="card">
+    <h3>💵 Valor inicial do caixa</h3>
+    <strong id="fechamentoValorInicial">R$ 0,00</strong>
+</div>
+      <div class="card">
             <h3>Faturamento do dia</h3>
             <strong id="fechamentoFaturamento">R$ 0,00</strong>
         </div>
@@ -1616,6 +1621,13 @@ function atualizarRelatorioComVendas(vendasSelecionadas){
     });
 
     const lucro = faturamento - custoTotal;
+
+const aberturaAtual = JSON.parse(
+    localStorage.getItem("conectPDV_caixaAberto") || "null"
+);
+
+document.getElementById("fechamentoValorInicial").textContent =
+    dinheiro(aberturaAtual ? Number(aberturaAtual.valorInicial) || 0 : 0);
 
     document.getElementById("fechamentoFaturamento").textContent =
         dinheiro(faturamento);
